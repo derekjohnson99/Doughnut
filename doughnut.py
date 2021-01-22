@@ -23,6 +23,7 @@ def draw_doughnut():
 
     while True:
         print("\x1b[2J")
+        #print("\n")
         render_frame(A, B)
         A += 0.04
         B += 0.02
@@ -44,8 +45,7 @@ def render_frame(A, B):
     # is 3/4th of the way from the center to the side of the screen.
     # screen_width*3/8 = K1*(R1+R2)/(K2+0)
     # screen_width*K2*3/(8*(R1+R2)) = K1
-    K1 = screen_width*K2*3/(8*(R1+R2));
-    K1 = 35
+    K1 = screen_height*K2*3/(8*(R1+R2));
 
     cosA = cos(A)
     sinA = sin(A)
@@ -83,9 +83,6 @@ def render_frame(A, B):
             # goes up in 3D space but down on 2D displays.
             xp = int(screen_width / 2 + int(K1 * ooz * x))
             yp = int(screen_height / 2 - int(K1 * ooz * y))
-
-            if yp == 22:
-                break
 
             buf_idx = xp + screen_width * yp
             assert buf_idx < 1760
