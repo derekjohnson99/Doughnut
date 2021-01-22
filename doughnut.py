@@ -22,8 +22,7 @@ def draw_doughnut():
     B = 0
 
     while True:
-        #print("\x1b[2J")
-        print(f"\n{A} {B}")
+        print("\x1b[2J")
         render_frame(A, B)
         A += 0.04
         B += 0.02
@@ -46,6 +45,7 @@ def render_frame(A, B):
     # screen_width*3/8 = K1*(R1+R2)/(K2+0)
     # screen_width*K2*3/(8*(R1+R2)) = K1
     K1 = screen_width*K2*3/(8*(R1+R2));
+    K1 = 35
 
     cosA = cos(A)
     sinA = sin(A)
@@ -87,8 +87,6 @@ def render_frame(A, B):
             if yp == 22:
                 break
 
-            #print(f"{i}, {j}: {xp} {yp}")
-
             buf_idx = xp + screen_width * yp
             assert buf_idx < 1760
 
@@ -109,9 +107,9 @@ def render_frame(A, B):
 
     for c in range(1760):
         sys.stdout.write(output[c])
-        sys.stdout.flush()
-        if c % screen_width == 0 and c > 0:
+        if c % screen_width == screen_width - 1:
             sys.stdout.write('\n')
+        sys.stdout.flush()
 
 if __name__ == "__main__":
 
