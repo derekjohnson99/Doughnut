@@ -22,12 +22,12 @@ def draw_doughnut():
     B = 0
 
     while True:
-        print("\x1b[2J")
+        print("\x1b[23A")
         #print("\n")
         render_frame(A, B)
         A += 0.04
         B += 0.02
-        time.sleep(0.05)
+        time.sleep(0.015)
 
 def render_frame(A, B):
     theta_spacing = 0.07
