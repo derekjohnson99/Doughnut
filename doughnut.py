@@ -7,8 +7,7 @@ donut.c translated into python
 from math import sin, cos
 import sys
 import time
-
-ascii_luminance = ".,-~:;=!*#$@"
+import numpy as np
 
 # Create a circle of radius R1 centered at R2
 # Create a doughnut by rotating about the Y axis
