@@ -101,11 +101,9 @@ def render_frame(A, B):
                     # luminance and plot it in our output:
                     output[buf_idx] = ".,-~:;=!*#$@"[luminance_index]
 
-    for c in range(1760):
-        sys.stdout.write(output[c])
-        if c % screen_width == screen_width - 1:
-            sys.stdout.write('\n')
-        sys.stdout.flush()
+    output = ''.join(output)
+    for c in range(0, 1760, 80):
+        print(output[c:c+80])
 
 if __name__ == "__main__":
 
