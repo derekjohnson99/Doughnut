@@ -46,36 +46,36 @@ def render_frame(A, B):
     # screen_width*K2*3/(8*(R1+R2)) = K1
     K1 = screen_height*K2*3/(8*(R1+R2));
 
-    cosA = cos(A)
-    sinA = sin(A)
-    cosB = cos(B)
-    sinB = sin(B)
+    cA = cos(A)
+    sA = sin(A)
+    cB = cos(B)
+    sB = sin(B)
 
     zbuffer = [0.0] * 1760
-    output = [' '] * 1760
+    output = bytearray(b' ' * 1760)
 
     for i in range(90):
         theta = i * theta_spacing
         # precompute sines and cosines of theta
-        cosT = cos(theta)
-        sinT = sin(theta)
+        cT = cos(theta)
+        sT = sin(theta)
 
         for j in range(314):
             phi = j * phi_spacing
             # precompute sines and cosines of phi
-            cosP = cos(phi)
-            sinP = sin(phi)
+            cP = cos(phi)
+            sP = sin(phi)
 
             # the x,y coordinate of the circle, before revolving (factored
             # out of the above equations)
-            circlex = R2 + R1 * cosT
-            circley = R1 * sinT
+            circlex = R2 + R1 * cT
+            circley = R1 * sT
 
             # final 3D (x,y,z) coordinate after rotations, directly from
             # our math above
-            x = circlex * (cosB * cosP + sinA * sinB * sinP) - circley * cosA * sinB
-            y = circlex * (sinB * cosP - sinA * cosB * sinP) + circley * cosA * cosB
-            z = K2 + cosA * circlex * sinP + circley * sinA
+            x = circlex * (cB * cP + sA * sB * sP) - circley * cA * sB
+            y = circlex * (sB * cP - sA * cB * sP) + circley * cA * cB
+            z = K2 + cA * circlex * sP + circley * sA
             ooz = 1/z  # "one over z"
 
             # x and y projection.  note that y is negated here, because y
@@ -87,7 +87,7 @@ def render_frame(A, B):
             assert buf_idx < 1760
 
             # calculate luminance.  ugly, but correct.
-            L = cosP*cosT*sinB - cosA*cosT*sinP - sinA*sinT + cosB * (cosA*sinT - cosT*sinA*sinP)
+            L = cP*cT*sB - cA*cT*sP - sA*sT + cB * (cA*sT - cT*sA*sP)
             # L ranges from -sqrt(2) to +sqrt(2).  If it's < 0, the surface
             # is pointing away from us, so we won't bother trying to plot it.
             if (L > 0):
@@ -99,9 +99,9 @@ def render_frame(A, B):
                     # luminance_index is now in the range 0..11 (8*sqrt(2) = 11.3)
                     # now we lookup the character corresponding to the
                     # luminance and plot it in our output:
-                    output[buf_idx] = ".,-~:;=!*#$@"[luminance_index]
+                    output[buf_idx] = ord(".,-~:;=!*#$@"[luminance_index])
 
-    output = ''.join(output)
+    output = str(output, 'utf-8')
     for c in range(0, 1760, 80):
         print(output[c:c+80])
 
