@@ -51,8 +51,8 @@ def render_frame(A, B):
     cB = cos(B)
     sB = sin(B)
 
-    zbuffer = [0.0] * 1760
-    output = bytearray(b' ' * 1760)
+    zbuffer = np.array([0.0] * 1760).reshape((screen_height, screen_width))
+    output = np.array(bytearray(b' ' * 1760)).reshape((screen_height, screen_width))
 
     for i in range(90):
         theta = i * theta_spacing
@@ -83,8 +83,8 @@ def render_frame(A, B):
             xp = int(screen_width / 2 + int(K1 * ooz * x))
             yp = int(screen_height / 2 - int(K1 * ooz * y))
 
-            buf_idx = xp + screen_width * yp
-            assert buf_idx < 1760
+            assert xp < screen_width
+            assert yp < screen_height
 
             # calculate luminance.  ugly, but correct.
             L = cP*cT*sB - cA*cT*sP - sA*sT + cB * (cA*sT - cT*sA*sP)
@@ -93,17 +93,16 @@ def render_frame(A, B):
             if (L > 0):
                 # test against the z-buffer.  larger 1/z means the pixel is
                 # closer to the viewer than what's already plotted.
-                if (ooz > zbuffer[buf_idx]):
-                    zbuffer[buf_idx] = ooz
+                if (ooz > zbuffer[yp][xp]):
+                    zbuffer[yp][xp] = ooz
                     luminance_index = int(L*8)
                     # luminance_index is now in the range 0..11 (8*sqrt(2) = 11.3)
                     # now we lookup the character corresponding to the
                     # luminance and plot it in our output:
-                    output[buf_idx] = ord(".,-~:;=!*#$@"[luminance_index])
+                    output[yp][xp] = ord(".,-~:;=!*#$@"[luminance_index])
 
-    output = str(output, 'utf-8')
-    for c in range(0, 1760, 80):
-        print(output[c:c+80])
+    for line in output:
+        print(str(line, 'utf-8'))
 
 if __name__ == "__main__":
 
