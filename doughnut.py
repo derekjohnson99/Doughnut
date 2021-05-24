@@ -28,15 +28,18 @@ def draw_doughnut():
         B += 0.02
         #time.sleep(0.015)
 
+screen_width = 80
+screen_height = 22
+
+zbuffer_base = np.array([0.0] * 1760).reshape((screen_height, screen_width))
+output_base = np.array(bytearray(b' ' * 1760)).reshape((screen_height, screen_width))
+
 def render_frame(A, B):
     theta_spacing = 0.07
     phi_spacing = 0.02
     R1 = 1
     R2 = 2
     K2 = 5
-
-    screen_width = 80
-    screen_height = 22
 
     # Calculate K1 based on screen size: the maximum x-distance occurs
     # roughly at the edge of the torus, which is at x=R1+R2, z=0.  we
@@ -51,8 +54,8 @@ def render_frame(A, B):
     cB = cos(B)
     sB = sin(B)
 
-    zbuffer = np.array([0.0] * 1760).reshape((screen_height, screen_width))
-    output = np.array(bytearray(b' ' * 1760)).reshape((screen_height, screen_width))
+    zbuffer = zbuffer_base.copy()
+    output = output_base.copy()
 
     for i in range(90):
         theta = i * theta_spacing
