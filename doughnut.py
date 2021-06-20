@@ -21,12 +21,12 @@ def draw_doughnut():
     B = 0
 
     while True:
-        print("\x1b[25A")
         #print("\n")
         render_frame(A, B)
         A += 0.04
         B += 0.02
         #time.sleep(0.015)
+        print("\x1b[25A")
 
 screen_width = 80
 screen_height = 24
