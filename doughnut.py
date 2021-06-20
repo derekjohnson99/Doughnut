@@ -21,7 +21,7 @@ def draw_doughnut():
     B = 0
 
     while True:
-        print("\x1b[23A")
+        print("\x1b[25A")
         #print("\n")
         render_frame(A, B)
         A += 0.04
@@ -29,10 +29,10 @@ def draw_doughnut():
         #time.sleep(0.015)
 
 screen_width = 80
-screen_height = 22
+screen_height = 24
 
-zbuffer_base = np.array([0.0] * 1760).reshape((screen_height, screen_width))
-output_base = np.array(bytearray(b' ' * 1760)).reshape((screen_height, screen_width))
+zbuffer_base = np.array([0.0] * 1920).reshape((screen_height, screen_width))
+output_base = np.array(bytearray(b' ' * 1920)).reshape((screen_height, screen_width))
 
 def render_frame(A, B):
     theta_spacing = 0.07
@@ -46,8 +46,9 @@ def render_frame(A, B):
     # want that to be displaced 3/8ths of the width of the screen, which
     # is 3/4th of the way from the center to the side of the screen.
     # screen_width*3/8 = K1*(R1+R2)/(K2+0)
-    # screen_width*K2*3/(8*(R1+R2)) = K1
-    K1 = screen_height*K2*3/(8*(R1+R2));
+    #K1 = screen_width*K2*3/(8*(R1+R2))
+    #K1 = screen_height*K2*3/(8*(R1+R2));
+    K1 = 19
 
     cA = cos(A)
     sA = sin(A)
@@ -86,14 +87,11 @@ def render_frame(A, B):
             xp = int(screen_width / 2 + int(K1 * ooz * x))
             yp = int(screen_height / 2 - int(K1 * ooz * y))
 
-            assert xp < screen_width
-            assert yp < screen_height
-
             # calculate luminance.  ugly, but correct.
             L = cP*cT*sB - cA*cT*sP - sA*sT + cB * (cA*sT - cT*sA*sP)
             # L ranges from -sqrt(2) to +sqrt(2).  If it's < 0, the surface
             # is pointing away from us, so we won't bother trying to plot it.
-            if (L > 0):
+            if (L > 0 and xp >= 0 and yp >= 0 and xp < screen_width and yp < screen_height):
                 # test against the z-buffer.  larger 1/z means the pixel is
                 # closer to the viewer than what's already plotted.
                 if (ooz > zbuffer[yp][xp]):
