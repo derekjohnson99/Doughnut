@@ -37,7 +37,7 @@ screen_height = 24
 zbuffer_base = np.array([0.0] * 1920).reshape((screen_height, screen_width))
 output_base = np.array(bytearray(b' ' * 1920)).reshape((screen_height, screen_width))
 
-@jit()
+@jit(nopython=True)
 def render_frame(A, B):
     theta_spacing = 0.07
     phi_spacing = 0.02
