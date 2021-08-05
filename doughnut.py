@@ -28,7 +28,7 @@ def draw_doughnut():
             print(str(line, 'utf-8'))
         A += 0.04
         B += 0.02
-        time.sleep(0.03)
+        time.sleep(0.015)
         print("\x1b[25A")
 
 screen_width = 80
@@ -39,8 +39,8 @@ output_base = np.array(bytearray(b' ' * 1920)).reshape((screen_height, screen_wi
 
 @jit()
 def render_frame(A, B):
-    theta_spacing = 0.14
-    phi_spacing = 0.04
+    theta_spacing = 0.07
+    phi_spacing = 0.02
     R1 = 1
     R2 = 2
     K2 = 5
