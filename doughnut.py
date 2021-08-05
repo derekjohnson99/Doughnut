@@ -5,7 +5,6 @@ donut.c translated into python
 '''
 
 from math import sin, cos
-import sys
 import time
 import numpy as np
 from numba import jit
@@ -31,11 +30,11 @@ def draw_doughnut():
         time.sleep(0.015)
         print("\x1b[25A")
 
-screen_width = 80
-screen_height = 24
+SCREEN_WIDTH = 80
+SCREEN_HEIGHT = 24
 
-zbuffer_base = np.array([0.0] * 1920).reshape((screen_height, screen_width))
-output_base = np.array(bytearray(b' ' * 1920)).reshape((screen_height, screen_width))
+ZBUFFER_BASE = np.array([0.0] * 1920).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
+OUTPUT_BASE = np.array(bytearray(b' ' * 1920)).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
 
 @jit(nopython=True)
 def render_frame(A, B):
@@ -49,56 +48,56 @@ def render_frame(A, B):
     # roughly at the edge of the torus, which is at x=R1+R2, z=0.  we
     # want that to be displaced 3/8ths of the width of the screen, which
     # is 3/4th of the way from the center to the side of the screen.
-    # screen_width*3/8 = K1*(R1+R2)/(K2+0)
-    #K1 = screen_width*K2*3/(8*(R1+R2))
-    #K1 = screen_height*K2*3/(8*(R1+R2));
+    # SCREEN_WIDTH*3/8 = K1*(R1+R2)/(K2+0)
+    #K1 = SCREEN_WIDTH*K2*3/(8*(R1+R2))
+    #K1 = SCREEN_HEIGHT*K2*3/(8*(R1+R2));
     K1 = 19
 
-    cA = cos(A)
-    sA = sin(A)
-    cB = cos(B)
-    sB = sin(B)
+    cosA = cos(A)
+    sinA = sin(A)
+    cosB = cos(B)
+    sinB = sin(B)
 
-    zbuffer = zbuffer_base.copy()
-    output = output_base.copy()
+    zbuffer = ZBUFFER_BASE.copy()
+    output = OUTPUT_BASE.copy()
 
     for i in range(90):
         theta = i * theta_spacing
         # precompute sines and cosines of theta
-        cT = cos(theta)
-        sT = sin(theta)
+        cosT = cos(theta)
+        sinT = sin(theta)
 
         for j in range(314):
             phi = j * phi_spacing
             # precompute sines and cosines of phi
-            cP = cos(phi)
-            sP = sin(phi)
+            cosP = cos(phi)
+            sinP = sin(phi)
 
             # the x,y coordinate of the circle, before revolving (factored
             # out of the above equations)
-            circlex = R2 + R1 * cT
-            circley = R1 * sT
+            circlex = R2 + R1 * cosT
+            circley = R1 * sinT
 
             # final 3D (x,y,z) coordinate after rotations, directly from
             # our math above
-            x = circlex * (cB * cP + sA * sB * sP) - circley * cA * sB
-            y = circlex * (sB * cP - sA * cB * sP) + circley * cA * cB
-            z = K2 + cA * circlex * sP + circley * sA
+            x = circlex * (cosB * cosP + sinA * sinB * sinP) - circley * cosA * sinB
+            y = circlex * (sinB * cosP - sinA * cosB * sinP) + circley * cosA * cosB
+            z = K2 + cosA * circlex * sinP + circley * sinA
             ooz = 1/z  # "one over z"
 
             # x and y projection.  note that y is negated here, because y
             # goes up in 3D space but down on 2D displays.
-            xp = int(screen_width / 2 + int(K1 * ooz * x))
-            yp = int(screen_height / 2 - int(K1 * ooz * y))
+            xp = int(SCREEN_WIDTH / 2 + int(K1 * ooz * x))
+            yp = int(SCREEN_HEIGHT / 2 - int(K1 * ooz * y))
 
             # calculate luminance.  ugly, but correct.
-            L = cP*cT*sB - cA*cT*sP - sA*sT + cB * (cA*sT - cT*sA*sP)
+            L = cosP*cosT*sinB - cosA*cosT*sinP - sinA*sinT + cosB * (cosA*sinT - cosT*sinA*sinP)
             # L ranges from -sqrt(2) to +sqrt(2).  If it's < 0, the surface
             # is pointing away from us, so we won't bother trying to plot it.
-            if (L > 0 and xp >= 0 and yp >= 0 and xp < screen_width and yp < screen_height):
+            if L > 0 and 0 <= xp < SCREEN_WIDTH and 0 <= yp < SCREEN_HEIGHT:
                 # test against the z-buffer.  larger 1/z means the pixel is
                 # closer to the viewer than what's already plotted.
-                if (ooz > zbuffer[yp][xp]):
+                if ooz > zbuffer[yp][xp]:
                     zbuffer[yp][xp] = ooz
                     luminance_index = int(L*8)
                     # luminance_index is now in the range 0..11 (8*sqrt(2) = 11.3)
