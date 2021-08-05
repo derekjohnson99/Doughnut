@@ -8,6 +8,7 @@ from math import sin, cos
 import sys
 import time
 import numpy as np
+from numba import jit
 
 # Create a circle of radius R1 centered at R2
 # Create a doughnut by rotating about the Y axis
@@ -22,10 +23,12 @@ def draw_doughnut():
 
     while True:
         #print("\n")
-        render_frame(A, B)
+        output = render_frame(A, B)
+        for line in output:
+            print(str(line, 'utf-8'))
         A += 0.04
         B += 0.02
-        #time.sleep(0.015)
+        time.sleep(0.03)
         print("\x1b[25A")
 
 screen_width = 80
@@ -34,6 +37,7 @@ screen_height = 24
 zbuffer_base = np.array([0.0] * 1920).reshape((screen_height, screen_width))
 output_base = np.array(bytearray(b' ' * 1920)).reshape((screen_height, screen_width))
 
+@jit()
 def render_frame(A, B):
     theta_spacing = 0.14
     phi_spacing = 0.04
@@ -102,8 +106,7 @@ def render_frame(A, B):
                     # luminance and plot it in our output:
                     output[yp][xp] = ord(".,-~:;=!*#$@"[luminance_index])
 
-    for line in output:
-        print(str(line, 'utf-8'))
+    return output
 
 if __name__ == "__main__":
 
