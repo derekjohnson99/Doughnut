@@ -22,7 +22,12 @@ def draw_doughnut():
 
     while True:
         #print("\n")
+        start = time.time()
         output = render_frame(A, B)
+        end = time.time()
+        render_time = f"Render time = {end-start:1.4f} s"
+        for i, letter in enumerate(render_time):
+            output[23][i] = ord(letter)
         for line in output:
             print(str(line, 'utf-8'))
         A += 0.04
@@ -32,9 +37,10 @@ def draw_doughnut():
 
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 24
+BUFF_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT
 
-ZBUFFER_BASE = np.array([0.0] * 1920).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
-OUTPUT_BASE = np.array(bytearray(b' ' * 1920)).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
+ZBUFFER_BASE = np.array([0.0] * BUFF_SIZE).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
+OUTPUT_BASE = np.array(bytearray(b' ' * BUFF_SIZE)).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
 
 @jit(nopython=True)
 def render_frame(A, B):
