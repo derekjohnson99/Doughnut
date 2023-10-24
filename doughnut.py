@@ -46,7 +46,7 @@ OUTPUT_BASE = np.array(bytearray(b' ' * BUFF_SIZE)).reshape((SCREEN_HEIGHT, SCRE
 def render_frame(A, B):
     theta_spacing = 0.07
     phi_spacing = 0.02
-    R1 = 1
+    R1 = 1.2
     R2 = 2
     K2 = 5
 
