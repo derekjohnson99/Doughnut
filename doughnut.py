@@ -15,6 +15,13 @@ from numba import jit
 # Project doughnut onto 2D screen
 # Determine illumination by calculating surface normal (given light source)
 
+SCREEN_WIDTH = 80
+SCREEN_HEIGHT = 28
+BUFF_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT
+
+ZBUFFER_BASE = np.array([0.0] * BUFF_SIZE).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
+OUTPUT_BASE = np.array(bytearray(b' ' * BUFF_SIZE)).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
+
 def draw_doughnut():
 
     A = 0
@@ -27,26 +34,19 @@ def draw_doughnut():
         end = time.time()
         render_time = f"Render time = {end-start:1.4f} s"
         for i, letter in enumerate(render_time):
-            output[23][i] = ord(letter)
+            output[SCREEN_HEIGHT - 1][i] = ord(letter)
         for line in output:
             print(str(line, 'utf-8'))
         A += 0.04
         B += 0.02
         time.sleep(0.015)
-        print("\x1b[25A")
-
-SCREEN_WIDTH = 80
-SCREEN_HEIGHT = 24
-BUFF_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT
-
-ZBUFFER_BASE = np.array([0.0] * BUFF_SIZE).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
-OUTPUT_BASE = np.array(bytearray(b' ' * BUFF_SIZE)).reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
+        print(f"\x1b[{SCREEN_HEIGHT + 1}A")
 
 @jit(nopython=True)
 def render_frame(A, B):
     theta_spacing = 0.07
     phi_spacing = 0.02
-    R1 = 1.2
+    R1 = 1.15
     R2 = 2
     K2 = 5
 
