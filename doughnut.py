@@ -4,7 +4,7 @@
 donut.c translated into python
 '''
 
-from math import sin, cos
+from math import sin, cos, pi
 import time
 import numpy as np
 from numba import jit
@@ -44,8 +44,8 @@ def draw_doughnut():
 
 @jit(nopython=True)
 def render_frame(A, B):
-    theta_spacing = 0.07
-    phi_spacing = 0.02
+    theta_steps = 90
+    phi_steps = 314
     R1 = 1.15
     R2 = 2
     K2 = 5
@@ -67,14 +67,14 @@ def render_frame(A, B):
     zbuffer = ZBUFFER_BASE.copy()
     output = OUTPUT_BASE.copy()
 
-    for i in range(90):
-        theta = i * theta_spacing
+    for i in range(theta_steps):
+        theta = i * 2 * pi / theta_steps
         # precompute sines and cosines of theta
         cosT = cos(theta)
         sinT = sin(theta)
 
-        for j in range(314):
-            phi = j * phi_spacing
+        for j in range(phi_steps):
+            phi = j * 2 * pi / phi_steps
             # precompute sines and cosines of phi
             cosP = cos(phi)
             sinP = sin(phi)
