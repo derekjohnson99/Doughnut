@@ -17,7 +17,6 @@ from numba import jit
 
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 28
-BUFF_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT
 
 ZBUFFER_BASE = np.zeros((SCREEN_HEIGHT, SCREEN_WIDTH), dtype=np.float32)
 OUTPUT_BASE = np.full((SCREEN_HEIGHT, SCREEN_WIDTH), ord(' '), dtype=np.ubyte)
