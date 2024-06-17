@@ -33,7 +33,7 @@ def draw_doughnut():
         end = time.time()
         render_time = f"Render time = {end-start:1.4f} s"
         for i, letter in enumerate(render_time):
-            output[SCREEN_HEIGHT - 1][i] = ord(letter)
+            output[SCREEN_HEIGHT - 1, i] = ord(letter)
         for line in output:
             print(str(line, 'utf-8'))
         A += 0.04
@@ -102,13 +102,13 @@ def render_frame(A, B):
             if L > 0 and 0 <= xp < SCREEN_WIDTH and 0 <= yp < SCREEN_HEIGHT:
                 # test against the z-buffer.  larger 1/z means the pixel is
                 # closer to the viewer than what's already plotted.
-                if ooz > zbuffer[yp][xp]:
-                    zbuffer[yp][xp] = ooz
+                if ooz > zbuffer[yp, xp]:
+                    zbuffer[yp, xp] = ooz
                     luminance_index = int(L*8)
                     # luminance_index is now in the range 0..11 (8*sqrt(2) = 11.3)
                     # now we lookup the character corresponding to the
                     # luminance and plot it in our output:
-                    output[yp][xp] = ord(".,-~:;=!*#$@"[luminance_index])
+                    output[yp, xp] = ord(".,-~:;=!*#$@"[luminance_index])
 
     return output
 
