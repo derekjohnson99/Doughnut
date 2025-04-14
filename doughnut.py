@@ -28,9 +28,9 @@ def draw_doughnut():
 
     while True:
         #print("\n")
-        start = time.time()
+        start = time.perf_counter()
         output = render_frame(A, B)
-        end = time.time()
+        end = time.perf_counter()
         render_time = f"Render time = {end-start:1.4f} s"
         for i, letter in enumerate(render_time):
             output[SCREEN_HEIGHT - 1, i] = ord(letter)
