@@ -4,10 +4,12 @@
 donut.c translated into python
 '''
 
+from statistics import fmean, median, mode, stdev, quantiles
 import time
 import numpy as np
 from numpy import sin, cos, pi
 from numba import jit
+import matplotlib.pyplot as plt
 
 # Create a circle of radius R1 centered at R2
 # Create a doughnut by rotating about the Y axis
@@ -21,25 +23,32 @@ SCREEN_HEIGHT = 28
 ZBUFFER_BASE = np.zeros((SCREEN_HEIGHT, SCREEN_WIDTH), dtype=np.float32)
 FRAME_BASE = np.full((SCREEN_HEIGHT, SCREEN_WIDTH), ord(' '), dtype=np.ubyte)
 
-def draw_doughnut():
+ITERATIONS = 1_000
+
+def draw_doughnut(iterations=ITERATIONS):
 
     A = 0
     B = 0
 
-    while True:
-        #print("\n")
+    call_times = []
+
+    for iteration in range(iterations):
+        time.sleep(0.008)
+        print(f"\x1b[{SCREEN_HEIGHT + 1}A")
         start = time.perf_counter()
         frame = render_frame(A, B)
         end = time.perf_counter()
-        render_time = f"Render time = {end-start:1.4f} s"
-        for i, letter in enumerate(render_time):
+        render_time = end - start
+        if iteration > 2:
+            call_times.append(render_time)
+        for i, letter in enumerate(f"Render time = {render_time:1.4f} s"):
             frame[SCREEN_HEIGHT - 1, i] = ord(letter)
         for line in frame:
             print(str(line, 'utf-8'))
         A += 0.04
         B += 0.02
-        time.sleep(0.015)
-        print(f"\x1b[{SCREEN_HEIGHT + 1}A")
+
+    return call_times
 
 @jit(nopython=True)
 def render_frame(A, B):
@@ -114,4 +123,15 @@ def render_frame(A, B):
 
 if __name__ == "__main__":
 
-    draw_doughnut()
+    call_times = draw_doughnut()
+
+    print(f"Render times (seconds):")
+    print(f" Min    = {min(call_times):1.4f}")
+    print(f" Max    = {max(call_times):1.4f}")
+    print(f" Mean   = {fmean(call_times):1.4f}")
+    print(f" Mode   = {mode(call_times):1.4f}")
+    print(f" Median = {median(call_times):1.4f}")
+
+    fig, ax = plt.subplots()
+    plt.hist(call_times, bins=100)
+    plt.show()
