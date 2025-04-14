@@ -56,7 +56,7 @@ def render_frame(A, B):
     # SCREEN_WIDTH*3/8 = K1*(R1+R2)/(K2+0)
     #K1 = SCREEN_WIDTH*K2*3/(8*(R1+R2))
     #K1 = SCREEN_HEIGHT*K2*3/(8*(R1+R2));
-    K1 = 19
+    K1 = 20
 
     cosA = cos(A)
     sinA = sin(A)
