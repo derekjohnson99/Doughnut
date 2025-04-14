@@ -1,0 +1,10 @@
+*.pdf
+__pycache__
+*.py[cod]
+*.class
+*.png
+*.jpg
+*.gif
+*.sqlite
+.ipynb_checkpoints/
+.DS_Store
