@@ -4,9 +4,9 @@
 donut.c translated into python
 '''
 
-from math import sin, cos, pi
 import time
 import numpy as np
+from numpy import sin, cos, pi
 from numba import jit
 
 # Create a circle of radius R1 centered at R2
@@ -19,7 +19,7 @@ SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 28
 
 ZBUFFER_BASE = np.zeros((SCREEN_HEIGHT, SCREEN_WIDTH), dtype=np.float32)
-OUTPUT_BASE = np.full((SCREEN_HEIGHT, SCREEN_WIDTH), ord(' '), dtype=np.ubyte)
+FRAME_BASE = np.full((SCREEN_HEIGHT, SCREEN_WIDTH), ord(' '), dtype=np.ubyte)
 
 def draw_doughnut():
 
@@ -29,12 +29,12 @@ def draw_doughnut():
     while True:
         #print("\n")
         start = time.perf_counter()
-        output = render_frame(A, B)
+        frame = render_frame(A, B)
         end = time.perf_counter()
         render_time = f"Render time = {end-start:1.4f} s"
         for i, letter in enumerate(render_time):
-            output[SCREEN_HEIGHT - 1, i] = ord(letter)
-        for line in output:
+            frame[SCREEN_HEIGHT - 1, i] = ord(letter)
+        for line in frame:
             print(str(line, 'utf-8'))
         A += 0.04
         B += 0.02
@@ -64,7 +64,7 @@ def render_frame(A, B):
     sinB = sin(B)
 
     zbuffer = ZBUFFER_BASE.copy()
-    output = OUTPUT_BASE.copy()
+    frame = FRAME_BASE.copy()
 
     for i in range(theta_steps):
         theta = i * 2 * pi / theta_steps
@@ -108,9 +108,9 @@ def render_frame(A, B):
                     # luminance_index is now in the range 0..11 (8*sqrt(2) = 11.3)
                     # now we lookup the character corresponding to the
                     # luminance and plot it in our output:
-                    output[yp, xp] = ord(".,-~:;=!*#$@"[luminance_index])
+                    frame[yp, xp] = ord(".,-~:;=!*#$@"[luminance_index])
 
-    return output
+    return frame
 
 if __name__ == "__main__":
 
