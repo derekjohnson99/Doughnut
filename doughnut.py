@@ -25,7 +25,7 @@ FRAME_BASE = np.full((SCREEN_HEIGHT, SCREEN_WIDTH), ord(' '), dtype=np.ubyte)
 
 ITERATIONS = 1_000
 
-def draw_doughnut(iterations=ITERATIONS):
+def spin_doughnut(iterations=ITERATIONS):
 
     A = 0
     B = 0
@@ -34,21 +34,27 @@ def draw_doughnut(iterations=ITERATIONS):
 
     for iteration in range(iterations):
         time.sleep(0.008)
-        print(f"\x1b[{SCREEN_HEIGHT + 1}A")
-        start = time.perf_counter()
-        frame = render_frame(A, B)
-        end = time.perf_counter()
-        render_time = end - start
+        render_time = draw_frame(A, B)
         if iteration > 2:
             call_times.append(render_time)
-        for i, letter in enumerate(f"Render time = {render_time:1.4f} s"):
-            frame[SCREEN_HEIGHT - 1, i] = ord(letter)
-        for line in frame:
-            print(str(line, 'utf-8'))
         A += 0.04
         B += 0.02
 
     return call_times
+
+def draw_frame(A, B, show_render_time=True):
+    print(f"\x1b[{SCREEN_HEIGHT + 1}A")
+    start = time.perf_counter()
+    frame = render_frame(A, B)
+    end = time.perf_counter()
+    render_time = end - start
+    if show_render_time:
+        for i, letter in enumerate(f"Render time = {render_time:1.4f} s"):
+            frame[SCREEN_HEIGHT - 1, i] = ord(letter)
+    for line in frame:
+        print(str(line, 'utf-8'))
+
+    return render_time
 
 @jit(nopython=True)
 def render_frame(A, B):
@@ -123,7 +129,7 @@ def render_frame(A, B):
 
 if __name__ == "__main__":
 
-    call_times = draw_doughnut()
+    call_times = spin_doughnut()
 
     print(f"Render times (seconds):")
     print(f" Min    = {min(call_times):1.4f}")
