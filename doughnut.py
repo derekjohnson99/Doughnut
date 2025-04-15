@@ -98,16 +98,16 @@ def render_frame(A, B):
         cosT = cos(theta)
         sinT = sin(theta)
 
+        # the x,y coordinate of the circle, before revolving (factored
+        # out of the above equations)
+        circlex = R2 + R1 * cosT
+        circley = R1 * sinT
+
         for j in range(phi_steps):
             phi = j * 2 * pi / phi_steps
             # precompute sines and cosines of phi
             cosP = cos(phi)
             sinP = sin(phi)
-
-            # the x,y coordinate of the circle, before revolving (factored
-            # out of the above equations)
-            circlex = R2 + R1 * cosT
-            circley = R1 * sinT
 
             # final 3D (x,y,z) coordinate after rotations, directly from
             # our math above
