@@ -4,7 +4,7 @@
 donut.c translated into python
 '''
 
-from statistics import fmean, median, mode, stdev, quantiles
+from statistics import fmean, median, mode
 import time
 import numpy as np
 from numpy import sin, cos, pi
@@ -26,23 +26,30 @@ FRAME_BASE = np.full((SCREEN_HEIGHT, SCREEN_WIDTH), ord(' '), dtype=np.ubyte)
 ITERATIONS = 1_000
 
 def spin_doughnut(iterations=ITERATIONS):
-
+    """
+    Draw several iterations of a doughnut showing it spinning around the x
+    and z axis.
+    """
     A = 0
     B = 0
 
-    call_times = []
+    render_times = []
 
     for iteration in range(iterations):
         time.sleep(0.008)
         render_time = draw_frame(A, B)
         if iteration > 2:
-            call_times.append(render_time)
+            render_times.append(render_time)
         A += 0.04
         B += 0.02
 
-    return call_times
+    return render_times
 
 def draw_frame(A, B, show_render_time=True):
+    """
+    Draw a single frame of a doughnut rotated A radians around the x-axis
+    and B radians around the z-axis
+    """
     print(f"\x1b[{SCREEN_HEIGHT + 1}A")
     start = time.perf_counter()
     frame = render_frame(A, B)
@@ -58,10 +65,14 @@ def draw_frame(A, B, show_render_time=True):
 
 @jit(nopython=True)
 def render_frame(A, B):
+    """
+    Render a single frame of a doughnut rotated A radians about the x-
+    axis and B radians about the z-axis to an ndarray
+    """
     theta_steps = 90
     phi_steps = 314
-    R1 = 1.15
-    R2 = 2
+    R1 = 1.15    # Radius of outer ring, i.e. thickness of doughnut
+    R2 = 2       # Radius of central axis of torus
     K2 = 5
 
     # Calculate K1 based on screen size: the maximum x-distance occurs
@@ -131,7 +142,7 @@ if __name__ == "__main__":
 
     call_times = spin_doughnut()
 
-    print(f"Render times (seconds):")
+    print("Render times (seconds):")
     print(f" Min    = {min(call_times):1.4f}")
     print(f" Max    = {max(call_times):1.4f}")
     print(f" Mean   = {fmean(call_times):1.4f}")
