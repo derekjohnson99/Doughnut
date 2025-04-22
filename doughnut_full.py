@@ -19,7 +19,7 @@ def circ_rot(theta):
     return np.array([R2 + R1 * cos(theta), R1 * sin(theta), 0], np.float32)
 
 #@njit
-def Y(phi: np.float32) -> np.array:
+def Y(phi):
     "Rotate phi radians around the y-axis"
     return np.array([[cos(phi), 0, sin(phi)], [0, 1, 0], [-sin(phi), 0, cos(phi)]], np.float32)
 
@@ -39,10 +39,10 @@ def surface_normal(A, B, phi, theta):
 
 @njit
 def screen_coords(point):
-    K1 = 20
+    K1 = 18
     K2 = 5 # Screen to origin z distance
     (x, y, z) = point
-    return np.array([((K1 * x) / (K2 + z)), ((K1 * y) / (K2 + z))], np.float32)
+    return np.array([((K1 * x) / (K2 + z)), ((K1 * y) / (K2 + z)), (K2 + z)], np.float32)
 
 def render_frame(A, B):
     zbuffer = ZBUFFER_BASE.copy()
@@ -55,13 +55,14 @@ def render_frame(A, B):
             sc = screen_coords(surface_point)
             xp  =int(SCREEN_WIDTH / 2 + int(sc[0]))
             yp = int(SCREEN_HEIGHT / 2 - int(sc[1]))
-            z = surface_point[2]
+            z = sc[2]
+            ooz = 1 / z
 
             L = surface_normal(A, B, phi, theta) @ np.array([0, 1, -1], np.float32)
 
             if L > 0 and 0 <= xp < SCREEN_WIDTH and 0 <= yp < SCREEN_HEIGHT:
-                if z > zbuffer[yp, xp]:
-                    zbuffer[yp, xp] = z
+                if ooz > zbuffer[yp, xp]:
+                    zbuffer[yp, xp] = ooz
                     luminance_index = int(L*8)
                     frame[yp, xp] = ord(".,-~:;=!*#$@"[luminance_index])
     return frame
